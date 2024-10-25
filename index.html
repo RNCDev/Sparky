@@ -324,7 +324,6 @@
       const apiKeyInput = document.getElementById("api-key").value.trim();
       if (apiKeyInput) {
         localStorage.setItem('openai_api_key', apiKeyInput);
-        document.getElementById("api-key").value = "";
         document.getElementById("api-key-status").innerText = "API Key is set.";
         alert("API Key saved!");
       } else {
