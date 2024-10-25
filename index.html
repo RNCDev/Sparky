@@ -197,10 +197,11 @@
       <input type="file" id="file-upload" accept=".txt,.pdf,.docx">
       <button id="upload-file">Upload File</button>
     </div>
-    <div id="api-key-container">
+    <div id="api-key-buttons">
       <button id="set-key">Set API Key</button>
       <button id="clear-key">Clear API Key</button>
     </div>
+    <div id="api-key-status" style="margin-top: 10px; font-size: 14px; color: green;"></div>
   </div>
 
   <!-- Chat Section -->
@@ -244,7 +245,7 @@
       }
 
       if (!apiKey) {
-        alert("Please enter your API key.");
+        alert("Please enter and set your API key.");
         return;
       }
 
@@ -323,8 +324,9 @@
       const apiKeyInput = document.getElementById("api-key").value.trim();
       if (apiKeyInput) {
         localStorage.setItem('openai_api_key', apiKeyInput);
-        alert("API Key saved!");
         document.getElementById("api-key").value = "";
+        document.getElementById("api-key-status").innerText = "API Key is set.";
+        alert("API Key saved!");
       } else {
         alert("Please enter a valid API key.");
       }
@@ -333,8 +335,19 @@
     // Clear API Key
     document.getElementById("clear-key").addEventListener("click", function () {
       localStorage.removeItem('openai_api_key');
-      alert("API Key cleared!");
       document.getElementById("api-key").value = "";
+      document.getElementById("api-key-status").innerText = "API Key is cleared.";
+      alert("API Key cleared!");
+    });
+
+    // Initialize API Key Status on Page Load
+    window.addEventListener('load', function() {
+      const storedApiKey = localStorage.getItem('openai_api_key');
+      if (storedApiKey) {
+        document.getElementById("api-key-status").innerText = "API Key is already set.";
+      } else {
+        document.getElementById("api-key-status").innerText = "No API Key set.";
+      }
     });
 
     // Send Button Click
