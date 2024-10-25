@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Chatbot</title>
+  <title>AI Chatbot with File Upload</title>
   <style>
     /* Reset and Body Styles */
     * {
@@ -30,7 +30,7 @@
       text-align: center;
     }
 
-    /* Header with API Key and Model Selection */
+    /* Header with API Key, Model Selection, and File Upload */
     #header {
       display: flex;
       flex-direction: column;
@@ -53,7 +53,7 @@
       width: 100%;
     }
 
-    #api-key, #model-selection {
+    #api-key, #model-selection, #file-upload {
       width: 100%;
       max-width: 200px;
       padding: 10px;
@@ -183,9 +183,9 @@
 </head>
 <body>
 
-  <h1>AI Chatbot</h1>
+  <h1>SPARKY</h1>
 
-  <!-- Header with API Key Input and Model Selection -->
+  <!-- Header with API Key Input, Model Selection, and File Upload -->
   <div id="header">
     <div id="api-key-container">
       <input type="text" id="api-key" placeholder="Enter your OpenAI API key">
@@ -197,6 +197,7 @@
         <option value="gpt-4-turbo">GPT-4-turbo</option>
         <option value="gpt-4">GPT-4</option>
       </select>
+      <input type="file" id="file-upload" accept=".txt,.pdf,.docx">
     </div>
     <div id="api-key-container">
       <button id="set-key">Set API Key</button>
@@ -214,7 +215,6 @@
   </div>
 
   <script>
-    // Auto-resize textarea based on input content
     document.getElementById("user-input").addEventListener("input", function () {
       this.style.height = "auto";
       this.style.height = (this.scrollHeight) + "px";
@@ -224,29 +224,47 @@
       const userInput = document.getElementById("user-input").value.trim();
       const apiKey = localStorage.getItem('openai_api_key');
       const model = document.getElementById("model-selection").value;
-      if (!userInput || !apiKey) {
-        alert("Please enter your API key and a message.");
+      const fileInput = document.getElementById("file-upload");
+
+      if (!userInput && !fileInput.files[0]) {
+        alert("Please enter a message or upload a file.");
         return;
       }
-      displayMessage(userInput, "user");
+
+      if (!apiKey) {
+        alert("Please enter your API key.");
+        return;
+      }
+
+      displayMessage(userInput || "[Document uploaded]", "user");
       document.getElementById("user-input").value = "";
-      document.getElementById("user-input").style.height = "50px"; // Reset textarea height
+      document.getElementById("user-input").style.height = "50px";
 
       try {
+        const formData = new FormData();
+        formData.append("model", model);
+        formData.append("messages", JSON.stringify([{ role: "user", content: userInput }]));
+        
+        if (fileInput.files[0]) {
+          formData.append("file", fileInput.files[0]);
+        }
+
         const response = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
             "Authorization": `Bearer ${apiKey}`
           },
-          body: JSON.stringify({ model: model, messages: [{ role: "user", content: userInput }] })
+          body: formData
         });
+
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
+
         const data = await response.json();
         const botMessage = data.choices[0].message.content;
         displayMessage(botMessage, "bot");
+
       } catch (error) {
         console.error("Error:", error.message);
         displayMessage("Sorry, something went wrong. Check console for details.", "bot");
@@ -262,7 +280,6 @@
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    // Store API Key
     document.getElementById("set-key").addEventListener("click", function () {
       const apiKey = document.getElementById("api-key").value;
       if (apiKey) {
@@ -273,17 +290,14 @@
       }
     });
 
-    // Clear API Key
     document.getElementById("clear-key").addEventListener("click", function () {
-      localStorage.removeItem('openai_api_key');
+      localStorage.removeItem('openai_api_key')
       alert("API Key cleared!");
       document.getElementById("api-key").value = "";
     });
 
-    // Send message on button click
     document.getElementById("send-button").addEventListener("click", sendMessage);
 
-    // Send message on pressing Enter
     document.getElementById("user-input").addEventListener("keypress", function (event) {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
