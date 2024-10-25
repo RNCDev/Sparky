@@ -1,13 +1,13 @@
-const apiKey = "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"; // replace this with your actual OpenAI API key
-
 async function sendMessage() {
     const userInput = document.getElementById("user-input").value;
-    if (!userInput) return;
+    const apiKey = localStorage.getItem('openai_api_key'); // Retrieve API key from localStorage
 
-    // Display user's message
+    if (!userInput || !apiKey) {
+        alert("Please enter your API key and a message.");
+        return;
+    }
+
     displayMessage(userInput, "user");
-
-    // Clear input field
     document.getElementById("user-input").value = "";
 
     try {
@@ -44,13 +44,23 @@ function displayMessage(message, sender) {
 
     const messagesContainer = document.getElementById("messages");
     messagesContainer.appendChild(messageElement);
-
-    // Scroll to the bottom of the chat
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
+// Setting the API key in localStorage
+document.getElementById("set-key").addEventListener("click", function () {
+    const apiKey = document.getElementById("api-key").value;
+    if (apiKey) {
+        localStorage.setItem('openai_api_key', apiKey); // Store the API key
+        alert("API Key saved!");
+    } else {
+        alert("Please enter a valid API key.");
+    }
+});
+
+// Send message on pressing Enter
 document.getElementById("user-input").addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {  // Modern way to check Enter key
+    if (event.key === "Enter") {
         sendMessage();
     }
 });
