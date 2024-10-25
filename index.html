@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Chatbot</title>
   <style>
-    /* General Styles */
+    /* Reset and Body Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: Arial, sans-serif;
       display: flex;
@@ -14,24 +20,42 @@
       padding: 20px;
       background-color: #f3f4f6;
       color: #333;
+      min-height: 100vh;
     }
 
     h1 {
       color: #333;
-      font-size: 24px;
+      font-size: 26px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    /* Header with API Key and Model Selection */
+    #header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 600px;
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       margin-bottom: 20px;
     }
 
-    /* API Key Input Container */
     #api-key-container {
       display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-      gap: 5px;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
     }
 
-    #api-key {
-      width: 180px;
+    #api-key, #model-selection {
+      width: 100%;
+      max-width: 200px;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
@@ -46,6 +70,7 @@
       color: white;
       cursor: pointer;
       transition: background-color 0.3s;
+      flex: 1;
     }
 
     #clear-key {
@@ -56,41 +81,38 @@
       opacity: 0.85;
     }
 
-    /* Model Selection */
-    #model-selection {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background-color: #fff;
-      cursor: pointer;
-    }
-
     /* Chat Container */
     #chat-container {
       width: 100%;
-      max-width: 400px;
-      border: 1px solid #ccc;
+      max-width: 600px;
+      background-color: #fff;
       border-radius: 10px;
-      padding: 15px;
-      background: #fff;
+      padding: 20px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      height: 70vh;
+      min-height: 400px;
     }
 
     /* Messages Section */
     #messages {
-      max-height: 300px;
+      flex: 1;
       overflow-y: auto;
       margin-bottom: 10px;
-      padding-right: 5px;
+      padding: 15px;
+      border-radius: 8px;
+      background-color: #f9f9f9;
     }
 
     /* Individual Message */
     .message {
       margin: 8px 0;
-      padding: 10px 15px;
+      padding: 12px 16px;
       border-radius: 8px;
       line-height: 1.4;
       white-space: pre-line;
+      max-width: 85%;
     }
 
     .user-message {
@@ -107,21 +129,28 @@
     }
 
     /* Textarea and Send Button */
+    #input-area {
+      display: flex;
+      width: 100%;
+      gap: 10px;
+      align-items: center;
+    }
+
     #user-input {
-      width: calc(100% - 75px);
-      min-height: 40px;
-      padding: 10px;
+      flex: 1;
+      padding: 12px;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 8px;
       resize: none;
       overflow: hidden;
       box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+      min-height: 50px;
     }
 
     #send-button {
-      padding: 10px;
+      padding: 12px 20px;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       background-color: #007bff;
       color: white;
       cursor: pointer;
@@ -131,31 +160,54 @@
     #send-button:hover {
       background-color: #0056b3;
     }
+
+    /* Responsive Adjustments */
+    @media (max-width: 480px) {
+      #header {
+        padding: 15px;
+      }
+
+      #chat-container {
+        padding: 15px;
+      }
+
+      #input-area {
+        flex-direction: column;
+      }
+
+      #send-button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
 
   <h1>AI Chatbot</h1>
 
-  <!-- API Key Input and Model Selection -->
-  <div id="api-key-container">
-    <input type="text" id="api-key" placeholder="Enter your OpenAI API key">
-    <button id="set-key">Set API Key</button>
-    <button id="clear-key">Clear API Key</button>
-    <select id="model-selection">
-      <option value="gpt-4o">GPT-4o</option>
-      <option value="gpt-4o mini">GPT-4o mini</option>
-      <option value="o1-preview">01-preview</option>
-      <option value="o1-mini">01-mini</option>
-      <option value="gpt-4-turbo">GPT-4-turbo</option>
-      <option value="gpt-4">GPT-4</option>
-    </select>
+  <!-- Header with API Key Input and Model Selection -->
+  <div id="header">
+    <div id="api-key-container">
+      <input type="text" id="api-key" placeholder="Enter your OpenAI API key">
+      <select id="model-selection">
+        <option value="gpt-4o">gpt-4o</option>
+        <option value="gpt-4o mini">gpt-4o mini</option>
+        <option value="o1-preview">01-preview</option>
+        <option value="o1-mini">01-mini</option>
+        <option value="gpt-4-turbo">GPT-4-turbo</option>
+        <option value="gpt-4">GPT-4</option>
+      </select>
+    </div>
+    <div id="api-key-container">
+      <button id="set-key">Set API Key</button>
+      <button id="clear-key">Clear API Key</button>
+    </div>
   </div>
 
   <!-- Chat Section -->
   <div id="chat-container">
     <div id="messages"></div>
-    <div style="display: flex;">
+    <div id="input-area">
       <textarea id="user-input" placeholder="Type your message..." rows="1"></textarea>
       <button id="send-button">Send</button>
     </div>
@@ -178,7 +230,7 @@
       }
       displayMessage(userInput, "user");
       document.getElementById("user-input").value = "";
-      document.getElementById("user-input").style.height = "40px"; // Reset textarea height
+      document.getElementById("user-input").style.height = "50px"; // Reset textarea height
 
       try {
         const response = await fetch("https://api.openai.com/v1/chat/completions", {
