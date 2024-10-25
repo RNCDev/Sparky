@@ -225,17 +225,48 @@
       const apiKey = localStorage.getItem('openai_api_key');
       const model = document.getElementById("model-selection").value;
       const fileInput = document.getElementById("file-upload");
-
+    
       if (!userInput && !fileInput.files[0]) {
         alert("Please enter a message or upload a file.");
         return;
       }
-
+    
       if (!apiKey) {
         alert("Please enter your API key.");
         return;
       }
 
+      try {
+          const headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`,
+          };
+      
+          const body = {
+            model: model,
+            messages: [{ role: "user", content: userInput }],
+          };
+      
+          const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(body),
+          });
+      
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+      
+          const data = await response.json();
+          const botMessage = data.choices[0].message.content;
+          displayMessage(botMessage, "bot");
+      
+        } catch (error) {
+          console.error("Error:", error.message);
+          displayMessage("Sorry, something went wrong. Check console for details.", "bot");
+        }
+    }     
+    
       displayMessage(userInput || "[Document uploaded]", "user");
       document.getElementById("user-input").value = "";
       document.getElementById("user-input").style.height = "50px";
