@@ -284,7 +284,7 @@
     async function makeApiCall(message, model, apiKey) {
       try {
         // CORS proxy URL
-        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+        const proxyUrl = 'https://corsproxy.io/?';
         const targetUrl = 'https://api.openai.com/v1/chat/completions';
         const apiUrl = proxyUrl + targetUrl;
 
