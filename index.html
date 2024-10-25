@@ -1,149 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chatbot</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
-        #chat-container {
-            width: 400px;
-            max-width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 10px;
-            background: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow-y: auto;
-            max-height: 400px;
-        }
-        #messages {
-            max-height: 350px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-        .message {
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .user-message {
-            background-color: #e1ffc7;
-            align-self: flex-end;
-        }
-        .bot-message {
-            background-color: #f0f0f0;
-            align-self: flex-start;
-        }
-        #user-input {
-            width: calc(100% - 80px);
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        #set-key {
-            padding: 10px;
-            margin-left: 5px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-        }
-        #set-key:hover {
-            background-color: #45a049;
-        }
-    </style>
+<title>Calculator</title>
+<style>
+.calculator {
+width: 300px;
+margin: 0 auto;
+padding: 20px;
+border: 1px solid #ccc;
+border-radius: 5px;
+text-align: center;
+}
+input[type="text"], input[type="button"] {
+width: 100%;
+margin: 5px 0;
+padding: 10px;
+box-sizing: border-box;
+}
+</style>
 </head>
 <body>
-    <h1>AI Chatbot</h1>
-    <div id="api-key-container">
-        <input type="text" id="api-key" placeholder="Enter your OpenAI API key">
-        <button id="set-key">Set API Key</button>
-    </div>
-    <div id="chat-container">
-        <div id="messages"></div>
-        <input type="text" id="user-input" placeholder="Type your message...">
-        <button id="send-button">Send</button>
-    </div>
-    
-    <script>
-        async function sendMessage() {
-            const userInput = document.getElementById("user-input").value;
-            const apiKey = localStorage.getItem('openai_api_key'); // Retrieve API key from localStorage
+<div class="calculator">
+<h2>Simple Calculator</h2>
+<label for="num1">Enter first number:</label>
+<input type="text" id="num1" placeholder="Enter first number">
+<br>
+<label for="num2">Enter second number:</label>
+<input type="text" id="num2" placeholder="Enter second number">
+<br>
+<input type="button" value="Add" onclick="addNumbers()">
+<input type="button" value="Subtract" onclick="subtractNumbers()">
+<input type="button" value="Multiply" onclick="multiplyNumbers()">
+<input type="button" value="Divide" onclick="divideNumbers()">
+<br>
+<p id="result"></p>
+</div>
 
-            if (!userInput || !apiKey) {
-                alert("Please enter your API key and a message.");
-                return;
-            }
+<script>
+function addNumbers() {
+var num1 = parseFloat(document.getElementById("num1").value);
+var num2 = parseFloat(document.getElementById("num2").value);
+var result = num1 + num2;
+document.getElementById("result").innerHTML = "Result: " + result;
+}
 
-            displayMessage(userInput, "user");
-            document.getElementById("user-input").value = "";
+function subtractNumbers() {
+var num1 = parseFloat(document.getElementById("num1").value);
+var num2 = parseFloat(document.getElementById("num2").value);
+var result = num1 - num2;
+document.getElementById("result").innerHTML = "Result: " + result;
+}
 
-            try {
-                const response = await fetch("https://api.openai.com/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${apiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: "gpt-3.5-turbo",
-                        messages: [{ role: "user", content: userInput }]
-                    })
-                });
+function multiplyNumbers() {
+var num1 = parseFloat(document.getElementById("num1").value);
+var num2 = parseFloat(document.getElementById("num2").value);
+var result = num1 * num2;
+document.getElementById("result").innerHTML = "Result: " + result;
+}
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                const botMessage = data.choices[0].message.content;
-                displayMessage(botMessage, "bot");
-
-            } catch (error) {
-                console.error("Error:", error.message);
-                displayMessage("Sorry, something went wrong. Check console for details.", "bot");
-            }
-        }
-
-        function displayMessage(message, sender) {
-            const messageElement = document.createElement("div");
-            messageElement.classList.add("message", `${sender}-message`);
-            messageElement.innerText = message;
-
-            const messagesContainer = document.getElementById("messages");
-            messagesContainer.appendChild(messageElement);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll to the bottom
-        }
-
-        // Setting the API key in localStorage
-        document.getElementById("set-key").addEventListener("click", function () {
-            const apiKey = document.getElementById("api-key").value;
-            if (apiKey) {
-                localStorage.setItem('openai_api_key', apiKey); // Store the API key
-                alert("API Key saved!");
-            } else {
-                alert("Please enter a valid API key.");
-            }
-        });
-
-        // Send message on button click
-        document.getElementById("send-button").addEventListener("click", sendMessage);
-        
-        // Send message on pressing Enter
-        document.getElementById("user-input").addEventListener("keypress", function (event) {
-            if (event.key === "Enter") {
-                sendMessage();
-            }
-        });
-    </script>
+function divideNumbers() {
+var num1 = parseFloat(document.getElementById("num1").value);
+var num2 = parseFloat(document.getElementById("num2").value);
+var result = num1 / num2;
+document.getElementById("result").innerHTML = "Result: " + result;
+}
+</script>
 </body>
 </html>
