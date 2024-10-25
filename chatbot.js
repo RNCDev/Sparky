@@ -1,4 +1,4 @@
-const apiKey = "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"; // replace this with your actual OpenAI API key
+const apiKey = "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"; // replace this with your actual OpenAI API key
 
 async function sendMessage() {
     const userInput = document.getElementById("user-input").value;
